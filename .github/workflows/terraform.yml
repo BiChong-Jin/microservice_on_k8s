@@ -1,0 +1,32 @@
+name: terraform-k8s
+
+on:
+  pull_request:
+    paths: ["infra/terraform/**"]
+  push:
+    branches: ["main"]
+    paths: ["infra/terraform/**"]
+
+jobs:
+  tf:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: infra/terraform
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Terraform Init
+        run: sudo terraform init
+
+      - name: Terraform Validate
+        run: sudo terraform validate
+
+      - name: Terraform Plan
+        if: github.event_name == 'pull_request'
+        run: sudo terraform plan
+
+      - name: Terraform Apply
+        if: github.event_name == 'push'
+        run: sudo terraform apply -auto-approve
