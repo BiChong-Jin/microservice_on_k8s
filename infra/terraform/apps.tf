@@ -58,7 +58,10 @@ resource "kubernetes_deployment" "marketplace" {
           name  = "marketplace"
           image = "jinbi/marketplace:v1"
 
-          env { name = "RECOMMENDATIONS_HOST" value = "recommendations" }
+          env { 
+            name = "RECOMMENDATIONS_HOST" 
+            value = "recommendations" 
+          }
 
           port { container_port = 5000 }
         }
