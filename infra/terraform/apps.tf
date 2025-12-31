@@ -1,4 +1,5 @@
 # --- recommendations ---
+# add context for testing
 resource "kubernetes_deployment" "recommendations" {
   metadata {
     name   = "recommendations"
