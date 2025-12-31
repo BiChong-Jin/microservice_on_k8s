@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: marketplace
+  labels:
+    app: marketplace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: marketplace
+  template:
+    metadata:
+      labels:
+        app: marketplace
+    spec:
+      containers:
+        - name: marketplace
+          image: jinbi/marketplace:v1
+          imagePullPolicy: IfNotPresent
+          env:
+            # Talk to the recommendations *service name* inside the cluster
+            - name: RECOMMENDATIONS_HOST
+              value: "recommendations"
+          ports:
+            - containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: marketplace
+spec:
+  selector:
+    app: marketplace
+  ports:
+    - port: 80 # external port
+      targetPort: 5000 # Flask in container
+      protocol: TCP
+  type: NodePort # or NodePort if your cluster doesn't support LB
+
