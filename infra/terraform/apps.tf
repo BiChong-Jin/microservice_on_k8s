@@ -29,7 +29,10 @@ resource "kubernetes_service" "recommendations" {
   metadata { name = "recommendations" }
   spec {
     selector = { app = "recommendations" }
-    port { port = 50051 target_port = 50051 }
+    port { 
+      port        = 50051
+      target_port = 50051
+    }
     type = "ClusterIP"
   }
 }
