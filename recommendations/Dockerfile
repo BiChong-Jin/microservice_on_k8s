@@ -12,4 +12,4 @@ COPY . .
 # grpc server listen on 50051
 EXPOSE 50051
 
-CMD["python", "recommendations.py"]
+CMD ["python", "recommendations.py"]
