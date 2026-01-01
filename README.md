@@ -6,6 +6,17 @@ This project demonstrates an end-to-end deployment of a microservices applicatio
 
 The project intentionally uses infrastructure-level control (kubeadm, Calico, Security Groups, self-hosted CI runner) to gain a deeper understanding of how Kubernetes, networking, and CI/CD systems work under the hood.
 
+## What This Project Demonstrates
+
+- kubeadm cluster setup and debugging
+- multi-arch container builds
+- Kubernetes networking internals
+- DNS and service routing
+- AWS Security Group design for Kubernetes
+- Terraform state management
+- CI/CD with self-hosted GitHub runners
+- Real-world debugging methodology
+
 ## Architecture
 
 ## Services
@@ -31,10 +42,9 @@ The project intentionally uses infrastructure-level control (kubeadm, Calico, Se
 - Kubernetes: kubeadm
 
 - Cluster Topology:
+  - 1 master node
 
-- 1 master node
-
-- 2 worker nodes
+  - 2 worker nodes
 
 - CNI: Calico
 
@@ -64,3 +74,176 @@ The project intentionally uses infrastructure-level control (kubeadm, Calico, Se
    - applies changes directly to the Kubernetes cluster
 
 6. GitHub receives job status and reports success/failure
+
+## Why a Self-Hosted Runner?
+
+### Why not GitHub-hosted runners?
+
+Using GitHub-hosted runners would require:
+
+- exposing the Kubernetes API publicly or
+
+- complex networking (VPN / bastion / tunneling)
+
+- storing cluster credentials as GitHub secrets
+
+### Why self-hosted worked better here
+
+- Runner lives inside the same AWS environment as the cluster
+
+- Direct, private access to:
+  - Kubernetes API
+
+  - kubeconfig
+
+  - internal networking
+
+- Full control over:
+  - Terraform version
+
+  - kubectl
+
+  - Docker
+
+  - system configuration
+
+## Key Problems Encountered & Fixes
+
+1. ErrImagePull / ImagePullBackOff
+
+Problem
+Pods failed to start with:
+
+```
+no match for platform in manifest
+```
+
+Cause
+
+- Images were built on Apple Silicon (arm64)
+
+- AWS EC2 nodes are amd64
+
+- Docker Hub image had no amd64 manifest
+
+Fix
+Built and pushed multi-architecture images using Docker Buildx:
+
+```bash
+docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t <image>:v1 \
+  --push
+```
+
+Why it worked
+Kubernetes automatically pulls the correct image based on node architecture.
+
+2. Application returned HTTP 500
+
+Problem
+Marketplace service returned 500 Internal Server Error.
+
+Cause
+gRPC call failed due to DNS resolution error:
+
+```
+DNS resolution failed for recommendations
+```
+
+3. Kubernetes DNS Not Working Inside Pods
+
+Diagnosis
+
+- CoreDNS pods were running
+
+- kube-dns service existed
+
+- but nslookup inside a pod timed out
+
+```bash
+kubectl run -it --rm dns-test --image=busybox -- sh
+nslookup recommendations   # timeout
+```
+
+Root Cause
+AWS Security Group did not allow node-to-node traffic.
+
+ClusterIP services (including DNS) require:
+
+```
+Pod → Node → another Node → Pod
+```
+
+This traffic was blocked.
+
+Fix
+Added a self-referencing inbound rule to the node Security Group:
+
+- Inbound: All traffic
+
+- Source: the same Security Group
+
+Why it worked
+This enabled:
+
+- pod-to-pod networking
+
+- kube-proxy service routing
+
+- DNS (10.96.0.10)
+
+4. Terraform “Already Exists” Errors
+
+Problem
+Terraform failed because resources already existed (created manually earlier).
+
+Cause
+Terraform state did not know about existing Kubernetes resources.
+
+Resolution (Chosen Approach)
+For demo simplicity:
+
+- deleted existing Deployments & Services
+
+- recreated them via Terraform
+
+- reset the GitHub Actions runner to ensure clean state
+
+This ensured:
+
+```
+Reality = Terraform State = CI Runner
+```
+
+## Terraform as the Source of Truth
+
+After cleanup:
+
+- All Kubernetes resources are created only by Terraform
+
+- No manual kubectl apply for managed resources
+
+- CI/CD pipeline is the single deployment path
+
+This matches real Infrastructure-as-Code best practices.
+
+## Lessons Learned
+
+- NodePort working ≠ ClusterIP working
+- Kubernetes DNS issues are often network, not CoreDNS
+- AWS Security Groups must explicitly allow intra-cluster traffic
+- Terraform trusts state, not reality
+- Self-hosted runners are normal and powerful in infra workflows
+
+## Future Improvements
+
+- Move Terraform state to S3 + DynamoDB
+- Use Ingress instead of NodePort
+- Add terraform plan on PR and manual approval
+- Separate CI runner from control plane
+- Add monitoring (Prometheus / Grafana)
+
+## Final Note
+
+This project intentionally avoids managed abstractions (EKS, managed CI) to focus on understanding fundamentals. The challenges encountered and solved here are representative of real infrastructure engineering work.
