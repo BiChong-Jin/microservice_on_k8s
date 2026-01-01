@@ -6,6 +6,8 @@ This project demonstrates an end-to-end deployment of a microservices applicatio
 
 The project intentionally uses infrastructure-level control (kubeadm, Calico, Security Groups, self-hosted CI runner) to gain a deeper understanding of how Kubernetes, networking, and CI/CD systems work under the hood.
 
+Check the app on : http://52.195.1.85:31184/
+
 ## What This Project Demonstrates
 
 - kubeadm cluster setup and debugging
