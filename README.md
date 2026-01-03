@@ -21,6 +21,71 @@ Check the app on : http://52.195.1.85:31184/
 
 ## Architecture
 
+```
+User Browser
+   |
+   | 1) HTTP GET http://<WORKER_PUBLIC_IP>:<NODEPORT>/
+   v
+Internet
+   |
+   v
+AWS VPC (ap-northeast-1)
+┌─────────────────────────────────────────────────────────────────────┐
+│ EC2 Worker Node (public IP)                                         │
+│                                                                     │
+│ 2) Packet hits NodePort (kube-proxy rule on the node)               │
+│    <WORKER_PUBLIC_IP>:30997  ->  Service "marketplace" (NodePort)   │
+│                                                                     │
+│      kube-proxy (iptables/IPVS)                                     │
+│           |                                                         │
+│           | 3) DNAT / load-balance to one marketplace Pod endpoint  │
+│           v                                                         │
+│   ┌───────────────────────────────┐                                 │
+│   │ marketplace Pod (Flask)       │                                 │
+│   │  - listens :5000              │                                 │
+│   │  - handles "/" route          │                                 │
+│   └───────────────┬───────────────┘                                 │
+│                   |                                                 │
+│                   | 4) gRPC call to "recommendations:50051"         │
+│                   |     (DNS + ClusterIP service routing)           │
+│                   v                                                 │
+│         ┌───────────────────────────────┐                           │
+│         │ 5) DNS query to kube-dns       │                          │
+│         │    10.96.0.10:53 (CoreDNS)     │                          │
+│         └───────────────┬───────────────┘                           │
+│                         | returns A record for "recommendations"    │
+│                         | (service ClusterIP)                       │
+│                         v                                           │
+│             recommendations.default.svc.cluster.local               │
+│                         -> 10.96.X.Y (ClusterIP)                    │
+│                         |                                           │
+│                         | 6) TCP connection to 10.96.X.Y:50051      │
+│                         v                                           │
+│                kube-proxy routes ClusterIP -> Pod endpoint          │
+│                         |                                           │
+│                         | 7) possibly node-to-node traffic          │
+│                         |    (allowed by SG self-referencing rule)  │
+│                         v                                           │
+│   ┌───────────────────────────────┐                                 │
+│   │ recommendations Pod (gRPC)    │                                 │
+│   │  - listens :50051             │                                 │
+│   │  - returns recommendation list│                                 │
+│   └───────────────┬───────────────┘                                 │
+│                   |                                                 │
+│                   | 8) gRPC response back to marketplace Pod        │
+│                   v                                                 │
+│   ┌───────────────────────────────┐                                 │
+│   │ marketplace Pod renders HTML  │                                 │
+│   └───────────────┬───────────────┘                                 │
+│                   |                                                 │
+│                   | 9) HTTP 200 response (HTML)                     │
+│                   v                                                 │
+└─────────────────────────────────────────────────────────────────────┘
+   |
+   v
+User Browser renders homepage
+```
+
 ## Services
 
 - marketplace
