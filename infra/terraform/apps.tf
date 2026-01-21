@@ -82,3 +82,36 @@ resource "kubernetes_service" "marketplace" {
   }
 }
 
+# --- tfdrift-operator ---
+resource "kubernetes_namespace" "tfdrift-operator" {
+  metadata {name = "tfdrift-operator-system"}
+}
+
+resource "kubernetes_service_account" "tfdrift-operator" {
+  metadata {
+    name = "tfdrift-operator"
+    namespace = kubernetes_namespace.tfdrift-operator.metadata[0].name
+  }
+}
+
+resource "kubernetes_cluster_role" "tfdrift-operator" {
+  metadata {name = "tfdrift-operator"}
+
+  rule {
+    api_groups = ["apps"]
+    resources = ["deployment"]
+    verbs = ["get", "list", "watch", "patch", "update"]
+  }
+
+  rule {
+    api_groups = [""]
+    resources = ["services"]
+    verbs = ["get", "list", "watch", "patch", "update"]
+  }
+
+  rule {
+    api_groups = [""]
+    resources = ["events"]
+    verbs = ["create", "patch"]
+  }
+}
