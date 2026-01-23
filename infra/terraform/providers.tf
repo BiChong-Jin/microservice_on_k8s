@@ -9,7 +9,7 @@ terraform {
 
 variable "kubeconfig_path" {
   type    = string
-  default = "/etc/kubernetes/admin.conf"
+  default = "/home/ubuntu/.kube/config"
 }
 
 provider "kubernetes" {
