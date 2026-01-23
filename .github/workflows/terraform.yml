@@ -18,15 +18,15 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Terraform Init
-        run: sudo terraform init
+        run: terraform init
 
       - name: Terraform Validate
-        run: sudo terraform validate
+        run: terraform validate
 
       - name: Terraform Plan
         if: github.event_name == 'pull_request'
-        run: sudo terraform plan
+        run: terraform plan
 
       - name: Terraform Apply
         if: github.event_name == 'push'
-        run: sudo terraform apply -auto-approve
+        run: terraform apply -auto-approve
