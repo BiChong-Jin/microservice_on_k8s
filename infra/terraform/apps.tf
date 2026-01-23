@@ -1,4 +1,4 @@
-# --- recommendations ---
+# --- recommendations ------
 resource "kubernetes_deployment" "recommendations" {
   metadata {
     name   = "recommendations"
