@@ -115,3 +115,45 @@ resource "kubernetes_cluster_role" "tfdrift-operator" {
     verbs = ["create", "patch"]
   }
 }
+
+resource "kubernetes_cluster_role_binding" "tfdrift-operator" {
+  metadata {name = "tfdrift-operator"}
+  
+  role_ref {
+    api_groups = "rbac.authorization.k8s.io"
+    kind = "ClusterRole"
+    name = kubernetes_cluster_role.tfdrift-operator.metadata[0].name
+  }
+
+  subject {
+    kind = "ServiceAccount"
+    name = kubernetes_service_account.tfdrift-operator.metadata[0].name
+    namespace = kubernetes_namespace.tfdrift-operator.metadata[0].name
+  }
+}
+
+resource "kubernetes_deployment" "tfdrift-operator" {
+  metadata {
+    name = "tfdrift-operator"
+    namespace = kubernetes_namespace.tfdrift-operator.metadata[0].name
+    labels = {app = "tfdrift-operator"}
+  }
+
+  spec {
+    replicas = 1
+    selector {match_labels = {app = "tfdrift-operator"}}
+
+    template {
+      metadata {labels = {app = "tfdrift-operator"}}
+
+      spec {
+        service_account_name = kubernetes_service_account.tfdrift-operator.metadata[0].name
+        
+        container {
+          name = "manager"
+          image = "jinbi/tfdrift-operator:v0.1.0"
+        }
+      }
+    }
+  }
+}
