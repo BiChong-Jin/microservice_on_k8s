@@ -120,7 +120,7 @@ resource "kubernetes_cluster_role_binding" "tfdrift-operator" {
   metadata {name = "tfdrift-operator"}
   
   role_ref {
-    api_groups = "rbac.authorization.k8s.io"
+    api_group = "rbac.authorization.k8s.io"
     kind = "ClusterRole"
     name = kubernetes_cluster_role.tfdrift-operator.metadata[0].name
   }
