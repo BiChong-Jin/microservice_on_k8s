@@ -99,7 +99,7 @@ resource "kubernetes_cluster_role" "tfdrift-operator" {
 
   rule {
     api_groups = ["apps"]
-    resources = ["deployment"]
+    resources = ["deployments", "deployments/status"]
     verbs = ["get", "list", "watch", "patch", "update"]
   }
 
