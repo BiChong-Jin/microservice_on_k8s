@@ -20,6 +20,19 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
+      - name: Terraform Import (bootstrap)
+        if: github.event_name == 'push'
+        run: |
+          terraform import kubernetes_deployment.recommendations default/recommendations || true
+          terraform import kubernetes_service.recommendations default/recommendations || true
+          terraform import kubernetes_deployment.marketplace default/marketplace || true
+          terraform import kubernetes_service.marketplace default/marketplace || true
+          terraform import kubernetes_namespace.tfdrift-operator tfdrift-operator-system || true
+          terraform import kubernetes_cluster_role.tfdrift-operator tfdrift-operator || true
+          terraform import kubernetes_service_account.tfdrift-operator tfdrift-operator-system/tfdrift-operator || true
+          terraform import kubernetes_cluster_role_binding.tfdrift-operator tfdrift-operator || true
+          terraform import kubernetes_deployment.tfdrift-operator tfdrift-operator-system/tfdrift-operator || true
+
       - name: Terraform Validate
         run: terraform validate
 

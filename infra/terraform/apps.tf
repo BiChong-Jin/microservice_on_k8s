@@ -37,7 +37,7 @@ resource "kubernetes_service" "recommendations" {
   }
 }
 
-# --- marketplace ---
+# ----- marketplace ---
 resource "kubernetes_deployment" "marketplace" {
   metadata {
     name   = "marketplace"
