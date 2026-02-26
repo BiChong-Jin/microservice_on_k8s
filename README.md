@@ -1,3 +1,5 @@
+[日本語](README_JP.md) | English
+
 # Kubernetes Microservices on AWS with Terraform & GitHub Actions (Self-Hosted Runner)
 
 ## Overview

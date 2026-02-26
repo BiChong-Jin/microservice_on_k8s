@@ -1,3 +1,5 @@
+[English](README.md) | 日本語
+
 # AWS上のKubernetesマイクロサービス - Terraform & GitHub Actions（セルフホストランナー）
 
 ## 概要
