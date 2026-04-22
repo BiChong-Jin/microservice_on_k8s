@@ -84,6 +84,10 @@ resource "kubernetes_service" "marketplace" {
 }
 
 # --- tfdrift-operator ---
+# TEMP: disabled while the operator image isn't ready to roll out.
+# Terraform's kubernetes_deployment waits for readiness, which was timing out
+# in CI. Re-enable once jinbi/tfdrift-operator:v0.1.0 is publishable.
+/*
 resource "kubernetes_namespace" "tfdrift-operator" {
   metadata {name = "tfdrift-operator-system"}
 }
@@ -158,3 +162,4 @@ resource "kubernetes_deployment" "tfdrift-operator" {
     }
   }
 }
+*/
