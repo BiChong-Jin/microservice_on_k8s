@@ -2,14 +2,383 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <title>Online Books For You</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kubernetes Microservices on AWS · Live Demo</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --bg-elev: #121a2e;
+        --bg-elev-2: #1a2440;
+        --border: #243051;
+        --text: #e6ecff;
+        --text-dim: #8b9ac2;
+        --accent: #5eead4;
+        --accent-2: #60a5fa;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        background:
+          radial-gradient(1200px 600px at 20% -10%, #18224a 0%, transparent 60%),
+          radial-gradient(900px 500px at 90% 10%, #10304a 0%, transparent 60%),
+          var(--bg);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.55;
+        min-height: 100vh;
+      }
+      .wrap { max-width: 1100px; margin: 0 auto; padding: 56px 24px 80px; }
+
+      code {
+        background: #0b1430;
+        border: 1px solid var(--border);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 12.5px;
+        color: var(--accent);
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+      }
+
+      header .tag {
+        color: var(--accent);
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+      header h1 {
+        font-size: clamp(26px, 4vw, 38px);
+        margin: 0 0 12px;
+        letter-spacing: -0.01em;
+      }
+      header p.overview {
+        color: var(--text-dim);
+        font-size: 16px;
+        max-width: 780px;
+        margin: 0;
+      }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+      .chip {
+        background: var(--bg-elev);
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+        padding: 4px 10px; border-radius: 999px;
+        font-size: 12px;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+      }
+      .chip.strong { color: var(--accent); border-color: rgba(94, 234, 212, 0.35); }
+
+      section { margin-top: 48px; }
+      section h2 {
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--accent);
+        margin: 0 0 16px;
+        font-weight: 600;
+      }
+
+      .grid-demo {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 10px;
+      }
+      .grid-demo div {
+        background: var(--bg-elev);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 14px;
+      }
+      .grid-demo div b { color: var(--accent-2); font-weight: 600; }
+
+      .arch {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        gap: 20px;
+        background: var(--bg-elev);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px;
+      }
+      @media (max-width: 860px) { .arch { grid-template-columns: 1fr; } }
+      .arch svg { width: 100%; height: auto; display: block; }
+
+      .node rect {
+        fill: var(--bg-elev-2);
+        stroke: var(--border);
+        stroke-width: 1.5;
+        transition: fill 0.2s, stroke 0.2s;
+      }
+      .node:hover rect, .node.active rect {
+        fill: #223055;
+        stroke: var(--accent);
+        cursor: pointer;
+      }
+      .node text {
+        fill: var(--text);
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 13px;
+        pointer-events: none;
+      }
+      .node text.sub { fill: var(--text-dim); font-size: 11px; }
+      .edge { stroke: #3a4a7a; stroke-width: 2; fill: none; marker-end: url(#arrow); }
+      .edge-label {
+        fill: var(--text-dim);
+        font-family: ui-monospace, monospace;
+        font-size: 11px;
+      }
+      .packet { fill: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); }
+
+      .detail {
+        background: var(--bg-elev-2);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 18px;
+      }
+      .detail .step {
+        color: var(--accent);
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+        letter-spacing: 0.12em;
+      }
+      .detail h3 { margin: 4px 0 10px; font-size: 18px; }
+      .detail p { margin: 0 0 10px; color: var(--text-dim); font-size: 14px; }
+      .detail .hint {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px dashed var(--border);
+        color: var(--text-dim);
+        font-size: 12.5px;
+      }
+
+      .live-intro {
+        color: var(--text-dim);
+        margin: -8px 0 14px;
+        font-size: 14px;
+      }
+      .books {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+        list-style: none;
+        padding: 0; margin: 0;
+      }
+      .books li {
+        background: linear-gradient(135deg, #182346, #121a2e);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 18px 16px 16px;
+        position: relative;
+      }
+      .books li::before {
+        content: "gRPC →";
+        position: absolute; top: 10px; right: 12px;
+        color: var(--accent);
+        font-family: ui-monospace, monospace;
+        font-size: 10px; letter-spacing: 0.12em;
+      }
+      .books li .title { font-weight: 600; }
+
+      footer {
+        margin-top: 56px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--text-dim);
+        font-size: 12px;
+        font-family: ui-monospace, monospace;
+      }
+    </style>
   </head>
   <body>
-    <h1>Mystery books you may like</h1>
-    <ul>
-      {% for book in recommendations %}
-      <li>{{ book.title }}</li>
-      {% endfor %}
-    </ul>
+    <div class="wrap">
+      <header>
+        <div class="tag">Self-hosted · kubeadm · AWS EC2</div>
+        <h1>Kubernetes Microservices on AWS</h1>
+        <p class="overview">
+          An end-to-end microservices deployment on a self-managed Kubernetes cluster
+          (kubeadm) running on AWS EC2, provisioned with Terraform and shipped via
+          GitHub Actions on a self-hosted runner. Built to exercise the fundamentals —
+          not the managed abstractions — of cluster networking, DNS, IaC, and CI/CD.
+        </p>
+        <div class="chips">
+          <span class="chip strong">Kubernetes</span>
+          <span class="chip">kubeadm</span>
+          <span class="chip">AWS EC2</span>
+          <span class="chip">Terraform</span>
+          <span class="chip">Calico CNI</span>
+          <span class="chip">CoreDNS</span>
+          <span class="chip">GitHub Actions</span>
+          <span class="chip">Self-hosted runner</span>
+          <span class="chip">gRPC</span>
+          <span class="chip">Flask</span>
+          <span class="chip">Docker Buildx (multi-arch)</span>
+        </div>
+      </header>
+
+      <section>
+        <h2>What this project demonstrates</h2>
+        <div class="grid-demo">
+          <div><b>kubeadm</b> cluster setup &amp; debugging</div>
+          <div><b>Multi-arch</b> container builds (arm64 + amd64)</div>
+          <div><b>Cluster networking</b> internals with Calico</div>
+          <div><b>DNS</b> and service routing via CoreDNS</div>
+          <div><b>AWS Security Groups</b> designed for k8s</div>
+          <div><b>Terraform</b> state as source of truth</div>
+          <div><b>CI/CD</b> with self-hosted GitHub runners</div>
+          <div><b>Real debugging</b> methodology — not magic</div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Request flow — click any node</h2>
+        <div class="arch">
+          <svg viewBox="0 0 440 520" role="img" aria-label="Architecture diagram">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                      markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#6b7aa8" />
+              </marker>
+            </defs>
+
+            <!-- edges -->
+            <path class="edge" d="M 220 64 L 220 96" />
+            <path class="edge" d="M 220 152 L 220 192" />
+            <path class="edge" d="M 220 248 L 220 320" />
+            <path class="edge" d="M 320 220 L 340 220" />
+            <path class="edge" d="M 340 230 L 320 230" />
+
+            <text class="edge-label" x="230" y="84">HTTP :31184</text>
+            <text class="edge-label" x="230" y="176">kube-proxy DNAT</text>
+            <text class="edge-label" x="230" y="290">gRPC :50051</text>
+            <text class="edge-label" x="325" y="210">DNS</text>
+
+            <!-- nodes -->
+            <g class="node" data-id="user">
+              <rect x="140" y="20" width="160" height="44" rx="8" />
+              <text x="220" y="40" text-anchor="middle">User Browser</text>
+              <text class="sub" x="220" y="56" text-anchor="middle">http / curl</text>
+            </g>
+
+            <g class="node" data-id="nodeport">
+              <rect x="120" y="96" width="200" height="56" rx="8" />
+              <text x="220" y="120" text-anchor="middle">NodePort :31184</text>
+              <text class="sub" x="220" y="138" text-anchor="middle">kube-proxy (iptables)</text>
+            </g>
+
+            <g class="node" data-id="marketplace">
+              <rect x="120" y="192" width="200" height="56" rx="8" />
+              <text x="220" y="216" text-anchor="middle">marketplace Pod</text>
+              <text class="sub" x="220" y="234" text-anchor="middle">Flask · :5000</text>
+            </g>
+
+            <g class="node" data-id="coredns">
+              <rect x="340" y="192" width="90" height="56" rx="8" />
+              <text x="385" y="216" text-anchor="middle">CoreDNS</text>
+              <text class="sub" x="385" y="234" text-anchor="middle">10.96.0.10</text>
+            </g>
+
+            <g class="node" data-id="recommendations">
+              <rect x="120" y="320" width="200" height="56" rx="8" />
+              <text x="220" y="344" text-anchor="middle">recommendations Pod</text>
+              <text class="sub" x="220" y="362" text-anchor="middle">gRPC · :50051</text>
+            </g>
+
+            <!-- animated packet tracing request + response -->
+            <circle class="packet" r="5">
+              <animateMotion dur="7s" repeatCount="indefinite"
+                path="M 220 20 L 220 64 L 220 96 L 220 152 L 220 192 L 220 248 L 220 320 L 220 376 L 220 320 L 220 248 L 220 192 L 220 152 L 220 96 L 220 64 L 220 20" />
+            </circle>
+          </svg>
+
+          <div class="detail" id="detail">
+            <div class="step">STEP 0</div>
+            <h3>Click a node to inspect the hop</h3>
+            <p>
+              Each step in this request lifecycle is a place where something
+              actually broke during real-world debugging of this project. The
+              animated packet traces the same path a real HTTP request takes
+              from the browser to the gRPC pod and back.
+            </p>
+            <div class="hint">
+              Tip: <code>CoreDNS</code> was the most instructive bug — the
+              marketplace pod couldn't resolve its sibling service until an AWS
+              Security Group rule was added to allow node-to-node traffic.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Live response from the recommendations pod</h2>
+        <p class="live-intro">
+          The cards below are the actual gRPC response the
+          <code>marketplace</code> pod just received from
+          <code>recommendations:50051</code>. Refresh to re-trigger the full
+          flow above.
+        </p>
+        <ul class="books">
+          {% for book in recommendations %}
+          <li><div class="title">{{ book.title }}</div></li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <footer>
+        Built with Flask · gRPC · kubeadm · Terraform · GitHub Actions (self-hosted runner)
+      </footer>
+    </div>
+
+    <script>
+      const details = {
+        user: {
+          step: "STEP 1",
+          title: "User → EC2 worker node",
+          body: "The browser sends <code>HTTP GET /</code> to the worker node's public IP on port <code>31184</code>. The AWS Security Group must explicitly allow inbound traffic on the NodePort range for this to work at all.",
+          hint: "Why a NodePort and not a LoadBalancer? Intentional — this cluster is self-managed kubeadm, so cloud-managed LBs are out of scope.",
+        },
+        nodeport: {
+          step: "STEP 2",
+          title: "kube-proxy DNATs NodePort → ClusterIP",
+          body: "<code>kube-proxy</code> installs iptables rules on every node for each Service. It DNATs the inbound NodePort packet to one of the <code>marketplace</code> pod endpoints, load-balancing across replicas.",
+          hint: "\"NodePort works\" does not prove the cluster network is healthy — it only proves node-local routing works. ClusterIP and DNS can still be broken.",
+        },
+        marketplace: {
+          step: "STEP 3",
+          title: "marketplace Pod · Flask",
+          body: "The Flask app handles <code>/</code>, then needs to call the <code>recommendations</code> service via gRPC. Before it can open the gRPC channel, it has to resolve <code>recommendations</code> by DNS.",
+          hint: "This pod is the gRPC <em>client</em>. If DNS is broken inside the pod network, every request here returns HTTP 500.",
+        },
+        coredns: {
+          step: "STEP 4",
+          title: "CoreDNS · 10.96.0.10",
+          body: "A DNS query leaves the marketplace pod for <code>kube-dns</code> (CoreDNS), which resolves <code>recommendations.default.svc.cluster.local</code> into its ClusterIP.",
+          hint: "This is where the biggest bug of the project lived: the AWS Security Group didn't allow node-to-node traffic, so DNS queries timed out. Fix: add a self-referencing inbound rule to the node SG.",
+        },
+        recommendations: {
+          step: "STEP 5",
+          title: "recommendations Pod · gRPC",
+          body: "The gRPC server listens on <code>:50051</code>, accepts the <code>Recommend</code> RPC, and returns a list of books. The response retraces the same path back to the browser.",
+          hint: "ClusterIP → Pod routing relies on the same SG rule as DNS. Fix one, you fix both.",
+        },
+      };
+
+      const detailEl = document.getElementById("detail");
+      document.querySelectorAll(".node").forEach((n) => {
+        n.addEventListener("click", () => {
+          document.querySelectorAll(".node.active").forEach((x) => x.classList.remove("active"));
+          n.classList.add("active");
+          const d = details[n.dataset.id];
+          if (!d) return;
+          detailEl.innerHTML =
+            '<div class="step">' + d.step + '</div>' +
+            '<h3>' + d.title + '</h3>' +
+            '<p>' + d.body + '</p>' +
+            '<div class="hint">' + d.hint + '</div>';
+        });
+      });
+    </script>
   </body>
 </html>
