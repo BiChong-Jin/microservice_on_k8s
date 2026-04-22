@@ -56,7 +56,7 @@ resource "kubernetes_deployment" "marketplace" {
 
         container {
           name  = "marketplace"
-          image = "jinbi/marketplace:v1"
+          image = "jinbi/marketplace:v2"
 
           env { 
             name = "RECOMMENDATIONS_HOST" 
