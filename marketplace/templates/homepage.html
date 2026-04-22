@@ -24,8 +24,9 @@
           radial-gradient(900px 500px at 90% 10%, #10304a 0%, transparent 60%),
           var(--bg);
         color: var(--text);
-        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        line-height: 1.55;
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", Meiryo, sans-serif;
+        line-height: 1.6;
         min-height: 100vh;
       }
       .wrap { max-width: 1100px; margin: 0 auto; padding: 56px 24px 80px; }
@@ -38,6 +39,38 @@
         font-size: 12.5px;
         color: var(--accent);
         font-family: ui-monospace, Menlo, Consolas, monospace;
+      }
+
+      /* Language toggle */
+      .lang-toggle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        display: inline-flex;
+        background: var(--bg-elev);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 4px;
+        z-index: 10;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 12px;
+      }
+      .lang-toggle button {
+        background: transparent;
+        border: none;
+        color: var(--text-dim);
+        padding: 6px 12px;
+        border-radius: 999px;
+        cursor: pointer;
+        font: inherit;
+        transition: color 0.15s, background 0.15s;
+      }
+      .lang-toggle button:hover { color: var(--text); }
+      .lang-toggle button.active {
+        background: var(--accent);
+        color: #0b1020;
+        font-weight: 600;
       }
 
       header .tag {
@@ -193,11 +226,16 @@
     </style>
   </head>
   <body>
+    <div class="lang-toggle" role="group" aria-label="Language">
+      <button data-lang="en" class="active">EN</button>
+      <button data-lang="ja">日本語</button>
+    </div>
+
     <div class="wrap">
       <header>
-        <div class="tag">Self-hosted · kubeadm · AWS EC2</div>
-        <h1>Kubernetes Microservices on AWS</h1>
-        <p class="overview">
+        <div class="tag" data-i18n="hero_tag">Self-hosted · kubeadm · AWS EC2</div>
+        <h1 data-i18n="hero_h1">Kubernetes Microservices on AWS</h1>
+        <p class="overview" data-i18n="hero_overview">
           An end-to-end microservices deployment on a self-managed Kubernetes cluster
           (kubeadm) running on AWS EC2, provisioned with Terraform and shipped via
           GitHub Actions on a self-hosted runner. Built to exercise the fundamentals —
@@ -211,29 +249,29 @@
           <span class="chip">Calico CNI</span>
           <span class="chip">CoreDNS</span>
           <span class="chip">GitHub Actions</span>
-          <span class="chip">Self-hosted runner</span>
+          <span class="chip" data-i18n="chip_runner">Self-hosted runner</span>
           <span class="chip">gRPC</span>
           <span class="chip">Flask</span>
-          <span class="chip">Docker Buildx (multi-arch)</span>
+          <span class="chip" data-i18n="chip_multiarch">Docker Buildx (multi-arch)</span>
         </div>
       </header>
 
       <section>
-        <h2>What this project demonstrates</h2>
+        <h2 data-i18n="demos_h2">What this project demonstrates</h2>
         <div class="grid-demo">
-          <div><b>kubeadm</b> cluster setup &amp; debugging</div>
-          <div><b>Multi-arch</b> container builds (arm64 + amd64)</div>
-          <div><b>Cluster networking</b> internals with Calico</div>
-          <div><b>DNS</b> and service routing via CoreDNS</div>
-          <div><b>AWS Security Groups</b> designed for k8s</div>
-          <div><b>Terraform</b> state as source of truth</div>
-          <div><b>CI/CD</b> with self-hosted GitHub runners</div>
-          <div><b>Real debugging</b> methodology — not magic</div>
+          <div data-i18n="demo_1"><b>kubeadm</b> cluster setup &amp; debugging</div>
+          <div data-i18n="demo_2"><b>Multi-arch</b> container builds (arm64 + amd64)</div>
+          <div data-i18n="demo_3"><b>Cluster networking</b> internals with Calico</div>
+          <div data-i18n="demo_4"><b>DNS</b> and service routing via CoreDNS</div>
+          <div data-i18n="demo_5"><b>AWS Security Groups</b> designed for k8s</div>
+          <div data-i18n="demo_6"><b>Terraform</b> state as source of truth</div>
+          <div data-i18n="demo_7"><b>CI/CD</b> with self-hosted GitHub runners</div>
+          <div data-i18n="demo_8"><b>Real debugging</b> methodology — not magic</div>
         </div>
       </section>
 
       <section>
-        <h2>Request flow — click any node</h2>
+        <h2 data-i18n="arch_h2">Request flow — click any node</h2>
         <div class="arch">
           <svg viewBox="0 0 440 520" role="img" aria-label="Architecture diagram">
             <defs>
@@ -243,7 +281,6 @@
               </marker>
             </defs>
 
-            <!-- edges -->
             <path class="edge" d="M 220 64 L 220 96" />
             <path class="edge" d="M 220 152 L 220 192" />
             <path class="edge" d="M 220 248 L 220 320" />
@@ -255,10 +292,9 @@
             <text class="edge-label" x="230" y="290">gRPC :50051</text>
             <text class="edge-label" x="325" y="210">DNS</text>
 
-            <!-- nodes -->
             <g class="node" data-id="user">
               <rect x="140" y="20" width="160" height="44" rx="8" />
-              <text x="220" y="40" text-anchor="middle">User Browser</text>
+              <text x="220" y="40" text-anchor="middle" data-i18n="svg_user">User Browser</text>
               <text class="sub" x="220" y="56" text-anchor="middle">http / curl</text>
             </g>
 
@@ -286,7 +322,6 @@
               <text class="sub" x="220" y="362" text-anchor="middle">gRPC · :50051</text>
             </g>
 
-            <!-- animated packet tracing request + response -->
             <circle class="packet" r="5">
               <animateMotion dur="7s" repeatCount="indefinite"
                 path="M 220 20 L 220 64 L 220 96 L 220 152 L 220 192 L 220 248 L 220 320 L 220 376 L 220 320 L 220 248 L 220 192 L 220 152 L 220 96 L 220 64 L 220 20" />
@@ -298,22 +333,15 @@
             <h3>Click a node to inspect the hop</h3>
             <p>
               Each step in this request lifecycle is a place where something
-              actually broke during real-world debugging of this project. The
-              animated packet traces the same path a real HTTP request takes
-              from the browser to the gRPC pod and back.
+              actually broke during real-world debugging of this project.
             </p>
-            <div class="hint">
-              Tip: <code>CoreDNS</code> was the most instructive bug — the
-              marketplace pod couldn't resolve its sibling service until an AWS
-              Security Group rule was added to allow node-to-node traffic.
-            </div>
           </div>
         </div>
       </section>
 
       <section>
-        <h2>Live response from the recommendations pod</h2>
-        <p class="live-intro">
+        <h2 data-i18n="live_h2">Live response from the recommendations pod</h2>
+        <p class="live-intro" data-i18n="live_intro">
           The cards below are the actual gRPC response the
           <code>marketplace</code> pod just received from
           <code>recommendations:50051</code>. Refresh to re-trigger the full
@@ -326,59 +354,242 @@
         </ul>
       </section>
 
-      <footer>
+      <footer data-i18n="footer">
         Built with Flask · gRPC · kubeadm · Terraform · GitHub Actions (self-hosted runner)
       </footer>
     </div>
 
     <script>
+      const i18n = {
+        en: {
+          htmlLang: "en",
+          docTitle: "Kubernetes Microservices on AWS · Live Demo",
+          hero_tag: "Self-hosted · kubeadm · AWS EC2",
+          hero_h1: "Kubernetes Microservices on AWS",
+          hero_overview:
+            "An end-to-end microservices deployment on a self-managed Kubernetes cluster (kubeadm) running on AWS EC2, provisioned with Terraform and shipped via GitHub Actions on a self-hosted runner. Built to exercise the fundamentals — not the managed abstractions — of cluster networking, DNS, IaC, and CI/CD.",
+          chip_runner: "Self-hosted runner",
+          chip_multiarch: "Docker Buildx (multi-arch)",
+          demos_h2: "What this project demonstrates",
+          demo_1: "<b>kubeadm</b> cluster setup &amp; debugging",
+          demo_2: "<b>Multi-arch</b> container builds (arm64 + amd64)",
+          demo_3: "<b>Cluster networking</b> internals with Calico",
+          demo_4: "<b>DNS</b> and service routing via CoreDNS",
+          demo_5: "<b>AWS Security Groups</b> designed for k8s",
+          demo_6: "<b>Terraform</b> state as source of truth",
+          demo_7: "<b>CI/CD</b> with self-hosted GitHub runners",
+          demo_8: "<b>Real debugging</b> methodology — not magic",
+          arch_h2: "Request flow — click any node",
+          svg_user: "User Browser",
+          live_h2: "Live response from the recommendations pod",
+          live_intro:
+            "The cards below are the actual gRPC response the <code>marketplace</code> pod just received from <code>recommendations:50051</code>. Refresh to re-trigger the full flow above.",
+          footer:
+            "Built with Flask · gRPC · kubeadm · Terraform · GitHub Actions (self-hosted runner)",
+          default_step: "STEP 0",
+          default_title: "Click a node to inspect the hop",
+          default_body:
+            "Each step in this request lifecycle is a place where something actually broke during real-world debugging of this project. The animated packet traces the same path a real HTTP request takes from the browser to the gRPC pod and back.",
+          default_hint:
+            "Tip: <code>CoreDNS</code> was the most instructive bug — the marketplace pod couldn't resolve its sibling service until an AWS Security Group rule was added to allow node-to-node traffic.",
+        },
+        ja: {
+          htmlLang: "ja",
+          docTitle: "AWS 上の Kubernetes マイクロサービス · ライブデモ",
+          hero_tag: "セルフホスト · kubeadm · AWS EC2",
+          hero_h1: "AWS 上の Kubernetes マイクロサービス",
+          hero_overview:
+            "AWS EC2 上のセルフマネージド Kubernetes クラスター (kubeadm) にマイクロサービスアプリケーションをエンドツーエンドでデプロイしたプロジェクトです。インフラは Terraform でプロビジョニングし、セルフホストランナー上の GitHub Actions でデプロイしています。マネージドな抽象レイヤーに頼らず、クラスターネットワーク・DNS・IaC・CI/CD の内部動作を自分の手で理解することを目的に構築しました。",
+          chip_runner: "セルフホストランナー",
+          chip_multiarch: "Docker Buildx (マルチアーキ)",
+          demos_h2: "このプロジェクトで扱っている技術",
+          demo_1: "<b>kubeadm</b> クラスターのセットアップとデバッグ",
+          demo_2: "<b>マルチアーキテクチャ</b>コンテナビルド (arm64 + amd64)",
+          demo_3: "<b>クラスターネットワーク</b>の内部構造 (Calico)",
+          demo_4: "<b>DNS</b> とサービスルーティング (CoreDNS)",
+          demo_5: "k8s 向け <b>AWS セキュリティグループ</b> 設計",
+          demo_6: "<b>Terraform ステート</b>を「正」とした運用",
+          demo_7: "セルフホスト GitHub ランナーによる <b>CI/CD</b>",
+          demo_8: "<b>実践的なデバッグ手法</b> — 魔法ではなく",
+          arch_h2: "リクエストの流れ — ノードをクリック",
+          svg_user: "ユーザーブラウザ",
+          live_h2: "recommendations Pod からの実際のレスポンス",
+          live_intro:
+            "下のカードは、<code>marketplace</code> Pod が <em>たった今</em> <code>recommendations:50051</code> から受け取った実際の gRPC レスポンスです。ページをリロードすると、上の流れがもう一度実行されます。",
+          footer:
+            "Flask · gRPC · kubeadm · Terraform · GitHub Actions (セルフホストランナー) で構築",
+          default_step: "STEP 0",
+          default_title: "ノードをクリックして各ホップを見てみましょう",
+          default_body:
+            "このリクエストのライフサイクルの各ステップは、実際の開発中に何かが壊れた箇所です。アニメーションのパケットは、ブラウザから gRPC Pod までの実際の HTTP リクエストと同じ経路をたどります。",
+          default_hint:
+            "ヒント: 最も学びが多かったのは <code>CoreDNS</code> のバグでした。marketplace Pod が隣の Service を名前解決できず、AWS セキュリティグループにノード間通信を許可するルールを追加してようやく解決しました。",
+        },
+      };
+
       const details = {
         user: {
-          step: "STEP 1",
-          title: "User → EC2 worker node",
-          body: "The browser sends <code>HTTP GET /</code> to the worker node's public IP on port <code>31184</code>. The AWS Security Group must explicitly allow inbound traffic on the NodePort range for this to work at all.",
-          hint: "Why a NodePort and not a LoadBalancer? Intentional — this cluster is self-managed kubeadm, so cloud-managed LBs are out of scope.",
+          en: {
+            step: "STEP 1",
+            title: "User → EC2 worker node",
+            body:
+              "The browser sends <code>HTTP GET /</code> to the worker node's public IP on port <code>31184</code>. The AWS Security Group must explicitly allow inbound traffic on the NodePort range for this to work at all.",
+            hint:
+              "Why a NodePort and not a LoadBalancer? Intentional — this cluster is self-managed kubeadm, so cloud-managed LBs are out of scope.",
+          },
+          ja: {
+            step: "STEP 1",
+            title: "ユーザー → EC2 ワーカーノード",
+            body:
+              "ブラウザはワーカーノードのパブリック IP のポート <code>31184</code> に対して <code>HTTP GET /</code> を送ります。AWS セキュリティグループで NodePort レンジへのインバウンド通信を明示的に許可していないと、そもそも通信が届きません。",
+            hint:
+              "なぜ LoadBalancer ではなく NodePort か? 意図的な選択です。このクラスターはセルフマネージドな kubeadm 構成なので、クラウドマネージドな LB は対象外としています。",
+          },
         },
         nodeport: {
-          step: "STEP 2",
-          title: "kube-proxy DNATs NodePort → ClusterIP",
-          body: "<code>kube-proxy</code> installs iptables rules on every node for each Service. It DNATs the inbound NodePort packet to one of the <code>marketplace</code> pod endpoints, load-balancing across replicas.",
-          hint: "\"NodePort works\" does not prove the cluster network is healthy — it only proves node-local routing works. ClusterIP and DNS can still be broken.",
+          en: {
+            step: "STEP 2",
+            title: "kube-proxy DNATs NodePort → ClusterIP",
+            body:
+              "<code>kube-proxy</code> installs iptables rules on every node for each Service. It DNATs the inbound NodePort packet to one of the <code>marketplace</code> pod endpoints, load-balancing across replicas.",
+            hint:
+              "\"NodePort works\" does not prove the cluster network is healthy — it only proves node-local routing works. ClusterIP and DNS can still be broken.",
+          },
+          ja: {
+            step: "STEP 2",
+            title: "kube-proxy が NodePort → ClusterIP へ DNAT",
+            body:
+              "<code>kube-proxy</code> は Service ごとに各ノードへ iptables ルールを書き込みます。届いた NodePort パケットを DNAT して <code>marketplace</code> Pod のエンドポイントのいずれかに振り分け、レプリカ間でロードバランスします。",
+            hint:
+              "「NodePort が通る」ことはクラスターネットワークが健全である証明にはなりません。ノード内のルーティングが動いているだけで、ClusterIP や DNS は別に壊れている可能性があります。",
+          },
         },
         marketplace: {
-          step: "STEP 3",
-          title: "marketplace Pod · Flask",
-          body: "The Flask app handles <code>/</code>, then needs to call the <code>recommendations</code> service via gRPC. Before it can open the gRPC channel, it has to resolve <code>recommendations</code> by DNS.",
-          hint: "This pod is the gRPC <em>client</em>. If DNS is broken inside the pod network, every request here returns HTTP 500.",
+          en: {
+            step: "STEP 3",
+            title: "marketplace Pod · Flask",
+            body:
+              "The Flask app handles <code>/</code>, then needs to call the <code>recommendations</code> service via gRPC. Before it can open the gRPC channel, it has to resolve <code>recommendations</code> by DNS.",
+            hint:
+              "This pod is the gRPC <em>client</em>. If DNS is broken inside the pod network, every request here returns HTTP 500.",
+          },
+          ja: {
+            step: "STEP 3",
+            title: "marketplace Pod · Flask",
+            body:
+              "Flask アプリは <code>/</code> を処理したあと、gRPC で <code>recommendations</code> サービスを呼び出す必要があります。gRPC チャネルを開く前に、まず <code>recommendations</code> を DNS で名前解決しなければなりません。",
+            hint:
+              "この Pod は gRPC の<em>クライアント側</em>です。Pod ネットワーク内で DNS が壊れていると、ここでのリクエストはすべて HTTP 500 を返します。",
+          },
         },
         coredns: {
-          step: "STEP 4",
-          title: "CoreDNS · 10.96.0.10",
-          body: "A DNS query leaves the marketplace pod for <code>kube-dns</code> (CoreDNS), which resolves <code>recommendations.default.svc.cluster.local</code> into its ClusterIP.",
-          hint: "This is where the biggest bug of the project lived: the AWS Security Group didn't allow node-to-node traffic, so DNS queries timed out. Fix: add a self-referencing inbound rule to the node SG.",
+          en: {
+            step: "STEP 4",
+            title: "CoreDNS · 10.96.0.10",
+            body:
+              "A DNS query leaves the marketplace pod for <code>kube-dns</code> (CoreDNS), which resolves <code>recommendations.default.svc.cluster.local</code> into its ClusterIP.",
+            hint:
+              "This is where the biggest bug of the project lived: the AWS Security Group didn't allow node-to-node traffic, so DNS queries timed out. Fix: add a self-referencing inbound rule to the node SG.",
+          },
+          ja: {
+            step: "STEP 4",
+            title: "CoreDNS · 10.96.0.10",
+            body:
+              "marketplace Pod から <code>kube-dns</code> (CoreDNS) へ DNS クエリが送られ、<code>recommendations.default.svc.cluster.local</code> が ClusterIP に解決されます。",
+            hint:
+              "このプロジェクト最大のバグが潜んでいた場所です。AWS セキュリティグループがノード間通信を許可しておらず、DNS クエリがタイムアウトしていました。解決策は、ノードの SG に自分自身を参照するインバウンドルールを追加することでした。",
+          },
         },
         recommendations: {
-          step: "STEP 5",
-          title: "recommendations Pod · gRPC",
-          body: "The gRPC server listens on <code>:50051</code>, accepts the <code>Recommend</code> RPC, and returns a list of books. The response retraces the same path back to the browser.",
-          hint: "ClusterIP → Pod routing relies on the same SG rule as DNS. Fix one, you fix both.",
+          en: {
+            step: "STEP 5",
+            title: "recommendations Pod · gRPC",
+            body:
+              "The gRPC server listens on <code>:50051</code>, accepts the <code>Recommend</code> RPC, and returns a list of books. The response retraces the same path back to the browser.",
+            hint:
+              "ClusterIP → Pod routing relies on the same SG rule as DNS. Fix one, you fix both.",
+          },
+          ja: {
+            step: "STEP 5",
+            title: "recommendations Pod · gRPC",
+            body:
+              "gRPC サーバーは <code>:50051</code> で待ち受け、<code>Recommend</code> RPC を受け取って書籍リストを返します。レスポンスは同じ経路を逆向きにたどってブラウザまで戻ります。",
+            hint:
+              "ClusterIP → Pod のルーティングは DNS と同じ SG ルールに依存しています。片方を直せばもう片方も直ります。",
+          },
         },
       };
 
       const detailEl = document.getElementById("detail");
+      let currentLang = "en";
+
+      function renderDetail(id) {
+        const d = details[id][currentLang];
+        detailEl.innerHTML =
+          '<div class="step">' + d.step + "</div>" +
+          "<h3>" + d.title + "</h3>" +
+          "<p>" + d.body + "</p>" +
+          '<div class="hint">' + d.hint + "</div>";
+      }
+
+      function renderDefaultDetail() {
+        const d = i18n[currentLang];
+        detailEl.innerHTML =
+          '<div class="step">' + d.default_step + "</div>" +
+          "<h3>" + d.default_title + "</h3>" +
+          "<p>" + d.default_body + "</p>" +
+          '<div class="hint">' + d.default_hint + "</div>";
+      }
+
+      function applyLang(lang) {
+        currentLang = lang;
+        const dict = i18n[lang];
+        document.documentElement.lang = dict.htmlLang;
+        document.title = dict.docTitle;
+
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.dataset.i18n;
+          const val = dict[key];
+          if (val === undefined) return;
+          if (el.tagName.toLowerCase() === "text") {
+            el.textContent = val;
+          } else {
+            el.innerHTML = val;
+          }
+        });
+
+        document.querySelectorAll(".lang-toggle button").forEach((b) => {
+          b.classList.toggle("active", b.dataset.lang === lang);
+        });
+
+        const active = document.querySelector(".node.active");
+        if (active) renderDetail(active.dataset.id);
+        else renderDefaultDetail();
+
+        try { localStorage.setItem("lang", lang); } catch (e) {}
+      }
+
       document.querySelectorAll(".node").forEach((n) => {
         n.addEventListener("click", () => {
-          document.querySelectorAll(".node.active").forEach((x) => x.classList.remove("active"));
+          document.querySelectorAll(".node.active").forEach((x) =>
+            x.classList.remove("active")
+          );
           n.classList.add("active");
-          const d = details[n.dataset.id];
-          if (!d) return;
-          detailEl.innerHTML =
-            '<div class="step">' + d.step + '</div>' +
-            '<h3>' + d.title + '</h3>' +
-            '<p>' + d.body + '</p>' +
-            '<div class="hint">' + d.hint + '</div>';
+          renderDetail(n.dataset.id);
         });
       });
+
+      document.querySelectorAll(".lang-toggle button").forEach((b) => {
+        b.addEventListener("click", () => applyLang(b.dataset.lang));
+      });
+
+      const saved = (() => {
+        try { return localStorage.getItem("lang"); } catch (e) { return null; }
+      })();
+      const initial = saved === "ja" ? "ja" : (
+        (navigator.language || "").toLowerCase().startsWith("ja") ? "ja" : "en"
+      );
+      applyLang(initial);
     </script>
   </body>
 </html>
