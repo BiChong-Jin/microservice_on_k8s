@@ -74,9 +74,10 @@ resource "kubernetes_service" "marketplace" {
   metadata { name = "marketplace" }
   spec {
     selector = { app = "marketplace" }
-    port { 
-      port = 80 
-      target_port = 5000 
+    port {
+      port        = 80
+      target_port = 5000
+      node_port   = 31184
     }
     type = "NodePort" # safest for kubeadm demo; switch to LB/Ingress later
   }
